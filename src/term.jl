@@ -39,7 +39,25 @@ one(::Type{Term})::Term = Term(1,0)
 """
 Show a term.
 """
-show(io::IO, t::Term) = print(io, "$(t.coeff)⋅x^$(t.degree)") #\cdot + [TAB]
+function show(io::IO, t::Term)
+
+    if t.coeff != 1 
+        print(io,"$(t.coeff)")
+        t.degree != 0 && print(io,"⋅")
+    end
+ 
+    if t.degree > 1
+        print(io,"x^$(t.degree)")
+    elseif t.degree == 1 
+        print(io,"x")
+    end
+    
+    if abs(t.coeff) == 1 && t.degree == 0
+        print(io,"1")
+    end
+end
+
+#show(io::IO, t::Term) = print(io, "$(t.coeff)⋅x^$(t.degree)") #\cdot + [TAB]
 
 ########################
 # Queries about a term #
@@ -70,7 +88,7 @@ Add two terms of the same degree.
 function +(t1::Term,t2::Term)::Term
     @assert t1.degree == t2.degree
     Term(t1.coeff + t2.coeff, t1.degree)
-end
+end 
 
 """
 Negate a term.
@@ -81,6 +99,9 @@ Negate a term.
 Subtract two terms with the same degree.
 """
 -(t1::Term, t2::Term)::Term = t1 + (-t2) 
+
+#Subtract an integer from a Polynomial
+-(t1::Polynomial, n::Int)::Polynomial = t1 + Polynomial(Term(-n,0)) 
 
 """
 Multiply two terms.
@@ -110,3 +131,5 @@ end
 Integer divide a term by an integer.
 """
 ÷(t::Term, n::Int) = t ÷ Term(n,0)
+
+"---- Term Run ----"

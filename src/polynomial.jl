@@ -14,6 +14,13 @@
 A Polynomial type - designed to be for polynomials with integer coefficients.
 """
 struct Polynomial
+    terms::Array{Term}   
+    Polynomial() = new(Term[])
+    #Inner constructor
+    Polynomial(h::Array{Term}, clean::Bool) = clean && new(h) 
+end
+
+#= struct Polynomial
     terms::MutableBinaryMaxHeap{Term}   
         #The terms in the heap need to satisfy:
             # Will never have terms with 0 coefficient
@@ -23,27 +30,47 @@ struct Polynomial
 
     #Inner constructor
     Polynomial(h::MutableBinaryMaxHeap{Term}) = new(h)
-end
+end =#
 
 """
 Construct a polynomial with a single term.
 """
 function Polynomial(t::Term)
-    terms = MutableBinaryMaxHeap{Term}()
+    terms = Term[]
     t.coeff != 0 && push!(terms, t)
-    return Polynomial(terms)
+    return Polynomial(terms,true)
 end
 
 """
 Construct a polynomial with a vector of terms.
 """
 function Polynomial(tv::Vector{Term})
-    terms = MutableBinaryMaxHeap{Term}()
-    for t in tv
-        t.coeff != 0 && push!(terms,t)
+    n = length(tv)
+    sort!(tv, by = x -> -x.degree)
+    if n == 1
+        return Polynomial(tv, true)
+    else
+        terms = Term[]
+        i = 1
+        while i < n+1
+            if tv[i].coeff != 0 
+                if i == n
+                    push!(terms,tv[i])
+
+                elseif tv[i].degree == tv[i+1].degree 
+                    tv[i+1] = tv[i]+tv[i+1]
+                else
+                    push!(terms,tv[i])
+                end
+            end
+            i = i + 1
+        end
     end
-    return Polynomial(terms)
-end
+    
+    return Polynomial(terms, true) 
+    #Once made pretty (no repreated factors and ordered), the vector is sent to the inner constructor to 
+    #made into a polynomial
+end 
 
 """
 Construct a polynomial of the form x^p-x.
@@ -104,6 +131,26 @@ Show a polynomial.
 """
 function show(io::IO, p::Polynomial) 
     p = deepcopy(p)
+    
+    if iszero(p)
+        print(io,"0")
+    else
+        n = length(p.terms)
+        for (i,t) in enumerate(p.terms)
+           
+            if t.coeff < 0
+                print(io,i != 1 ? " - " : "-")
+                print(io,-t)
+            else 
+                print(io,i != 1 ? " + " : "")
+                print(io,t)
+            end
+        end
+    end
+end
+
+#= function show(io::IO, p::Polynomial) 
+    p = deepcopy(p)
     if iszero(p)
         print(io,"0")
     else
@@ -112,7 +159,7 @@ function show(io::IO, p::Polynomial)
             print(io, t, i != n ? " + " : "")
         end
     end
-end
+end =#
 
 ##############################################
 # Iteration over the terms of the polynomial #
@@ -174,6 +221,7 @@ end
 Pop the leading term out of the polynomial.
 """
 pop!(p::Polynomial)::Term = pop!(p.terms)
+prepop!(p::Polynomial)::Term = popat!(p.terms,1) #I needed a way to "pop" the first term.
 
 """
 Check if the polynomial is zero.
@@ -258,7 +306,7 @@ Warning this may not make sense if n does not divide all the coefficients of p.
 ÷(p::Polynomial,n::Int) = (prime)->Polynomial(map((pt)->((pt ÷ n)(prime)), p.terms))
 
 """
-Take the smod of a polynomial with an integer.
+Take the s of a polynomial with an integer.
 """
 function mod(f::Polynomial, p::Int)::Polynomial
     p_out = Polynomial()
@@ -280,3 +328,5 @@ function pow_mod(p::Polynomial, n::Int, prime::Int)
     end
     return out
 end
+
+" ---- Polynomial Run ----"

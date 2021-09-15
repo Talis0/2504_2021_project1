@@ -11,11 +11,11 @@ Add two polynomials.
 """
 function +(p1::Polynomial, p2::Polynomial)::Polynomial
     p1, p2 = deepcopy(p1), deepcopy(p2)
-    p3 = Polynomial()
+    p3 = Term[]
     while !iszero(p1) && !iszero(p2)
         t1, t2 = leading(p1), leading(p2) 
         if t1.degree == t2.degree
-            push!(p3, pop!(p1)+pop!(p2))
+            push!(p3, (prepop!(p1)+prepop!(p2)))
         elseif t1.degree < t2.degree
             push!(p3,pop!(p2))
         else
@@ -28,7 +28,8 @@ function +(p1::Polynomial, p2::Polynomial)::Polynomial
     while !iszero(p2)
         push!(p3,pop!(p2))
     end
-    return p3
+    
+    return Polynomial(p3)
 end
 
 """
