@@ -100,8 +100,7 @@ Subtract two terms with the same degree.
 """
 -(t1::Term, t2::Term)::Term = t1 + (-t2) 
 
-#Subtract an integer from a Polynomial
--(t1::Polynomial, n::Int)::Polynomial = t1 + Polynomial(Term(-n,0)) 
+
 
 """
 Multiply two terms.
@@ -122,6 +121,11 @@ derivative(t::Term) = Term(t.coeff*t.degree,max(t.degree-1,0))
 """
 Divide two terms. Returns a function of an integer.
 """
+#= function ÷(t1::Term,t2::Term) #\div + [TAB]
+    @assert t1.degree ≥ t2.degree
+    f(p::Int)::Term = Term(mod((t1.coeff * int_inverse_mod(t2.coeff, p)), p), t1.degree - t2.degree)
+end =#
+
 function ÷(t1::Term,t2::Term) #\div + [TAB]
     @assert t1.degree ≥ t2.degree
     f(p::Int)::Term = Term(mod((t1.coeff * int_inverse_mod(t2.coeff, p)), p), t1.degree - t2.degree)

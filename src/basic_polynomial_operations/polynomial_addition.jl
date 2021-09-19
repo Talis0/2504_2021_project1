@@ -32,14 +32,25 @@ function +(p1::Polynomial, p2::Polynomial)::Polynomial
     return Polynomial(p3)
 end
 
+function +(p1::PolynomialModP, p2::PolynomialModP)::PolynomialModP
+    @assert p1.mod == p2.mod
+    return PolynomialModP(p1.polynomial + p2.polynomial,p1.mod)
+end
+
 """
 Add a polynomial and a term.
 """
 +(p::Polynomial, t::Term) = p + Polynomial(t)
 +(t::Term, p::Polynomial) = p + t
 
++(p::PolynomialModP, t::Term) = PolynomialModP(p.polynomial + Polynomial(t),p.mod)
++(t::Term, p::PolynomialModP) = p.polynomial + t
+
 """
 Add a polynomial and an integer.
 """
 +(p::Polynomial, n::Int) = p + Term(n,0)
 +(n::Int, p::Polynomial) = p + Term(n,0)
+
++(p::PolynomialModP, n::Int) = p + Term(n,0)
++(n::Int, p::PolynomialModP) = p + Term(n,0)

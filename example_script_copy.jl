@@ -2,7 +2,7 @@ include("poly_factorization_project.jl")
 println("")
 println("")
 println("----- Example Polynomials -----")
-x = x_poly()
+x = x_poly(5)
 p1 = 2x^3 + 4x^2 - 3x
 p2 = 2x^4 - 4x^2 - 3x + 3
 @show p1
@@ -24,16 +24,15 @@ println("----- Derivatives-----")
 
 println("")
 
-prime = 17
-p = mod((7x^3 + 2x^2 + 8x + 1)*(x^2+x+1),prime)
-println("Will factor this polynomial (mod $prime): ", p)
-factorization = factor(p,prime)
+p = (7x^3 + 2x^2 + 8x + 1)*(x^2+x+1)
+println("Will factor this polynomial: ", p)
+factorization = factor(p)
 println("Here is the factorization: ", factorization)
 
-pr = mod(expand_factorization(factorization),prime)
+pr = expand_factorization(factorization)
 println("Reconstructing: ", pr)
 
 
-println("")
-println("---- Extended GCD with on p1 and p2 (mod 101) ----")
-extended_euclid_alg(p1*p2,p2,101)
+println(" ")
+println("---- Extended Euclid Algorithm on p1 and p2 (mod 101) ----")
+extended_euclid_alg(p1*p2,p2)
