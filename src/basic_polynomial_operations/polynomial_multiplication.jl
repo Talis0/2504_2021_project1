@@ -19,7 +19,6 @@ function *̄(p1::Polynomial, p2::Polynomial)::Polynomial
 end
 
 function split(a::Vector{Tuple{Int64, Int64}}, b::Vector{Tuple{Int64, Int64}}, p::Int)
-    #println("")
     n1 = length(a)
     n2 = length(b)
     

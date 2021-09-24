@@ -36,6 +36,8 @@ println("Reconstructing: ", pr)
 
 println(" ")
 println("---- Extended Euclid Algorithm on p1 and p2 (mod 101) ----")
-extended_euclid_alg(p1*p2,p2)
+a = extended_euclid_alg(p2,p1)
+pretty_print_egcd(((p1*p2).polynomial,p2.polynomial), a)
+
 
 println(":)")

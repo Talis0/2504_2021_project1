@@ -46,7 +46,6 @@ function plus(p1::Polynomial, p2::Polynomial)::Polynomial
     for i in 1:n
         output[i] = Term(p1[i]+p2[i],n-i)
     end
-    println("hello")
 
     return Polynomial(output,true)
 

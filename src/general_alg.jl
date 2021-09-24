@@ -48,7 +48,7 @@ end
 """
 Display the result of the extended Euclidean algorithm.
 """
-pretty_print_egcd((a,b),(g,s,t)) = println("$a × $s + $b × $t = $g") #\times + [TAB]
+pretty_print_egcd((a,b),(g,s,t)) = println("($a) × ($s) + ($b) × ($t) = $g") #\times + [TAB]
 
 """
 Integer inverse symmetric mod

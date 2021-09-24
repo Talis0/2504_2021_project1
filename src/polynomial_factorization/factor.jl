@@ -11,7 +11,7 @@ Factors a polynomial over the field Z_p.
 
 Returns a vector of tuples of (irreducible polynomials (mod p), multiplicity) such that their product of the list (mod p) is f. Irreducibles are fixed points on the function factor.
 """
-function factor(f::Polynomial, prime::Int)::Vector{Tuple{Polynomial,Int}}
+#= function factor(f::Polynomial, prime::Int)::Vector{Tuple{Polynomial,Int}}
     #Cantor Zassenhaus factorization
 
     f_modp = mod(f, prime)
@@ -48,10 +48,9 @@ function factor(f::Polynomial, prime::Int)::Vector{Tuple{Polynomial,Int}}
     push!(ret_val, (leading(f_modp).coeff* one(Polynomial), 1) )
 
     return ret_val
-end 
+end  =#
 
 function factor(f::PolynomialModP)::Vector{Tuple{PolynomialModP,Int}}
-    #println("----------------------")
     
     #Cantor Zassenhaus factorization
 
@@ -65,15 +64,12 @@ function factor(f::PolynomialModP)::Vector{Tuple{PolynomialModP,Int}}
     squares_poly = gcd(f, derivative(ff)) 
   
     ff = ff ÷ squares_poly
-   
 
     # make f monic
     old_coeff = leading(ff).coeff
-    ff = ff ÷ old_coeff      
-   
+    ff = ff ÷ old_coeff     
   
     dds = dd_factor(ff)
-    
 
     ret_val = Tuple{PolynomialModP,Int}[]
 
@@ -111,16 +107,18 @@ function factor(f::PolynomialModP)::Vector{Tuple{PolynomialModP,Int}}
             if degree(cand) == i 
                 
                 push!(ret_val,(cand,p))
+
             elseif degree(cand) > 0
+
                 a = factor(cand)
                 for j in a
+
                     j[2] = j[2]*p
                 end
                 ret_val = vcat(ret_val,a)
             end
             
-        end
-        
+        end 
     end 
 
     return ret_val
@@ -188,7 +186,6 @@ function dd_factor(f::PolynomialModP)::Array{PolynomialModP}
         g[k] = gcd(w - x, f) 
 
         f = f ÷ g[k]
-        @show f
     end
     
     #edge case for final factor
@@ -203,7 +200,7 @@ Distinct degree split.
 Returns a list of irreducible polynomials of degree `d` so that the product of that list (mod prime) is the polynomial `f`.
 """
 function dd_split(f::Polynomial, d::Int, prime::Int)::Vector{Polynomial}
-    print(".")
+
     f = mod(f,prime)
     degree(f) == d && return [f]
     degree(f) == 0 && return []
@@ -218,7 +215,6 @@ function dd_split(f::Polynomial, d::Int, prime::Int)::Vector{Polynomial}
 end
 
 function dd_split(f::PolynomialModP, d::Int)::Vector{PolynomialModP}
-    print(".")
 
     degree(f) == d && return [f]
     degree(f) == 0 && return []

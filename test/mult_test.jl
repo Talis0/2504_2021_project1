@@ -1,8 +1,8 @@
-include("mod polynomials_test.jl")
+include("mod_polynomials_test.jl")
 
 function poly_benchmark()
     println("---- Multiplication Test ----")
-    println("(Time for New method on to")
+    println("(Time for New method on top")
     println("")
     for mod in [5,41,211,1009,10007]
         println("Mod = $mod")

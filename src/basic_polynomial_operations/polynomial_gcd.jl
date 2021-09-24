@@ -26,7 +26,6 @@ function extended_euclid_alg(a::Polynomial, b::Polynomial, prime::Int)
 end
 
 function extended_euclid_alg(a::PolynomialModP, b::PolynomialModP)
-    #println("gcd----")
     prime = a.mod
     old_r, r = a, b
     old_s, s = one(PolynomialModP,prime), zero(PolynomialModP,prime)
@@ -34,7 +33,6 @@ function extended_euclid_alg(a::PolynomialModP, b::PolynomialModP)
 
     while !iszero(r)
 
-        #@show old_r
         q = divide(old_r, r) |> first
 
         old_r, r = r, old_r - q*r
