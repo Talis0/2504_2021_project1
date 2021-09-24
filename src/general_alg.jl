@@ -62,5 +62,30 @@ end
 
 symmod(a::Int,m::Int)::Int = mod(a,m) > m/2 ? a = mod(a,m) - m : mod(a,m)
 
+function pretty_factor(a) #prints a nice representation of XEuclid 
+    print("")
+    n = length(a)
+    mod = a[1][1].mod
+    for i in 1:n-1
+        p = a[i]
+        print("(")
+        print(p[1].polynomial)
+        print(")")
+        if p[2] != 1
+            print("^")
+            print(p[2])
+        end
+        print(" × ")
+    end
+    print("(")
+    print(a[n][1].polynomial)
+    print(")")
+    if a[n][2] != 1
+        print("^")
+        print(a[n][2])
+    end
+    print(" (mod $mod)")
+end
+
 
     

@@ -32,15 +32,15 @@
     """
     Construct a polynomial with a vector of terms.
     """
-    function Polynomial(tv::Vector{Term})
+    function Polynomial(tv::Vector{Term}) 
         n = length(tv)
-       sort!(tv, by = x -> -x.degree)
+       sort!(tv, by = x -> -x.degree) #sorts 
         if n == 1
             return Polynomial(tv, true)
         else
             terms = Term[]
             i = 1
-            while i < n+1
+            while i < n+1 #removes like terms
                 if tv[i].coeff != 0 
                     if i == n
                         push!(terms,tv[i])
@@ -53,6 +53,10 @@
                 end
                 i = i + 1
             end
+        end
+
+        if length(terms)== 0 || terms[1].coeff == 0 
+            return Polynomial()
         end
         
         return Polynomial(terms, true) 
@@ -67,7 +71,7 @@
         polynomial::Polynomial
         mod::Int
         PolynomialModP(p) = new(Polynomial(Term[]),p)
-        PolynomialModP(poly::Polynomial, mod::Int, modded::Bool) = modded && new(poly,mod)
+        PolynomialModP(poly::Polynomial, mod::Int, modded::Bool) = modded && new(poly,mod) #see 109 for the explination of the bool
     end
 
     function PolynomialModP(t::Term,p)
@@ -79,14 +83,14 @@
 
     function PolynomialModP(tv::Vector{Term},p::Int)
         n = length(tv)
-        sort!(tv, by = x -> -x.degree)
+        sort!(tv, by = x -> -x.degree) #it has to be sorted in order, soo this does that
         tv = mod.(tv,p)
         if n == 1
             terms = tv
         else
             terms = Term[]
             i = 1
-            while i < n+1
+            while i < n+1 # This adds like terms together
                 if tv[i].coeff != 0 
                     tv[i].coeff 
                     if i == n
@@ -106,7 +110,8 @@
             return PolynomialModP(p)
         end
         
-        terms = Polynomial(terms,true)
+        terms = Polynomial(terms,true) #The true signifies that polynomial is odered and has no repeats, 
+        #as such can just be turned into a poly straight away
         return PolynomialModP(terms, p, true) 
     end 
 
@@ -309,7 +314,7 @@
     pop!(p::Polynomial)::Term = pop!(p.terms)
     pop!(p::PolynomialModP)::Term = pop!(p.polynomial.terms)
 
-    prepop!(p::Polynomial)::Term = popat!(p.terms,1) #I needed a way to "pop" the first term.
+    prepop!(p::Polynomial)::Term = popat!(p.terms,1) #I needed a way to "pop" the first term (When changing to array from heap)
     prepop!(p::PolynomialModP)::Term = popat!(p.polynomial.terms,1)
     """
     Check if the polynomial is zero.
@@ -351,7 +356,7 @@
     """
     A square free polynomial.
     """
-    square_free(p::Polynomial, prime::Int)::Polynomial = (p ÷ gcd(p,derivative(p),prime))(prime)
+
     square_free(p::PolynomialModP)::PolynomialModP = p ÷ gcd(p,derivative(p))
 
 #################################
@@ -423,18 +428,5 @@
         end
         return p_out
     end
-
-    """
-    Power of a polynomial mod prime.
-    """
-    function pow_mod(p::Polynomial, n::Int, prime::Int)
-        n < 0 && error("No negative power")
-        out = one(p)
-        for _ in 1:n
-            out *= p
-            out = mod(out, prime)
-        end
-        return out
-    end 
 
 " ---- Polynomial Run ----"

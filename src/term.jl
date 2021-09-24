@@ -13,7 +13,7 @@
 """
 A term.
 """
-mutable struct Term  #structs are immutable by default
+mutable struct Term 
     coeff::Int
     degree::Int
     function Term(coeff, degree::Int)
@@ -123,10 +123,6 @@ derivative(t::Term) = Term(t.coeff*t.degree,max(t.degree-1,0))
 """
 Divide two terms. Returns a function of an integer.
 """
-#= function ÷(t1::Term,t2::Term) #\div + [TAB]
-    @assert t1.degree ≥ t2.degree
-    f(p::Int)::Term = Term(mod((t1.coeff * int_inverse_mod(t2.coeff, p)), p), t1.degree - t2.degree)
-end =#
 
 function ÷(t1::Term,t2::Term) #\div + [TAB]
     @assert t1.degree ≥ t2.degree
@@ -143,4 +139,3 @@ Returns the Coefficients and Degrees of a Term
 """
 coeff(t::Term)::Int = t.coeff
 degree(t::Term)::Int = t.degree
-"---- Term Run ----"

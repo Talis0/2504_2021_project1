@@ -15,38 +15,53 @@ function mod_sum_test_poly(mod::Int ; num_sums::Int = 100, seed::Int = 0)
         p1 = rand(PolynomialModP,mod)
         p2 = rand(PolynomialModP,mod)
         sum = p1+p2
-        @assert p2 == sum - p1
-        @assert p1 == sum - p2
+        @assert iszero((p2+p1) - sum)
     end
+    println("Addition Test - PASSED")
 end
 """
 Test product of polynomials.
 """
-function mod_prod_test_poly(mod::Int ;N::Int = 100, N_prods::Int = 20, seed::Int = 0)
+function mod_prod_test_poly(m::Int ;N::Int = 100, N_prods::Int = 20, seed::Int = 0)
     Random.seed!(seed)
     for _ in 1:N
-        p1 = rand(PolynomialModP,mod)
-        p2 = rand(PolynomialModP,mod)
+        p1 = rand(PolynomialModP,m)
+        p2 = rand(PolynomialModP,m)
         prod = p1*p2
-        prodtest= leading(p1)*leading(p2)
-        c = prodtest.coeff%mod
-        prod_of_leading_terms = Term(c,prodtest.degree)
-        @assert leading(prod) == prod_of_leading_terms
+        prodtest= mod(leading(p1)*leading(p2),m)
+        if !iszero(prodtest - leading(prod))
+            println("There is a multiplication problem for $p1 & $p2")
+            @assert iszero(prodtest - leading(prod))
+        end
     end
 
     for _ in 1:N
-        p_base = PolynomialModP(Term(1,0),mod)
+        p_base = PolynomialModP(Term(1,0),m)
         for _ in 1:N_prods
-            p = rand(PolynomialModP,mod)
+            p = rand(PolynomialModP,m)
             prod = p_base*p
-            prodtest= leading(p_base)*leading(p)
-            c = prodtest.coeff%mod
-            prodtest = Term(c,prodtest.degree)
-            @assert leading(prod) == prodtest
+            test = leading(p_base)*leading(p)
+            test.coeff = (test.coeff)%m
+            if !iszero(test - leading(prod))
+                println("There is a multiplication problem for $p1 & $p2")
+                @assert iszero(test - leading(prod))
+            end
             p_base = prod
         end
     end
-    println("prod_test_poly - PASSED")
+    println("Multiplication Test - PASSED")
+end
+
+function new_prod_test(p1,p2)
+    println("")
+    a = p1*p2 - p1*̄p1
+    if a != 0
+        println("The multiplication does not work for:")
+        println(p1*p2)
+        println(p1*̄p2) 
+        return 
+    end
+    return "Multiplication Works"
 end
 
 """
@@ -59,9 +74,9 @@ function mod_prod_derivative_test_poly(mod::Int;N::Int = 10^2,  seed::Int = 0)
         p2 = rand(PolynomialModP,mod)
         p1d = derivative(p1)
         p2d = derivative(p2)
-        @assert (p1d*p2) + (p1*p2d) == derivative(p1*p2)
+        @assert iszero((p1d*p2) + (p1*p2d)-derivative(p1*p2))
     end
-    println("prod_derivative_test_poly - PASSED")
+    println("Derivative Test - PASSED")
 end
 
 """
@@ -89,7 +104,7 @@ function mod_division_test_poly(mod::Int; N::Int = 10^4, seed::Int = 0)
         end
         @assert iszero( q*p2+r - p_prod )
     end
-    println("division_test_poly - PASSED")
+    println("Division Test - PASSED")
 end
 
 """
@@ -103,5 +118,5 @@ function mod_ext_euclid_test_poly(mod::Int; N::Int = 100, seed::Int = 0)
         g, s, t = extended_euclid_alg(p1, p2)
         @assert s*p1 + t*p2 - g == 0
     end
-    println("ext_euclid_test_poly - PASSED")
+    println("Extended Euclid Algorithm Test - PASSED")
 end

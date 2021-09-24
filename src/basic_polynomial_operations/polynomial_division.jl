@@ -51,7 +51,6 @@ function divide(num::PolynomialModP, den::PolynomialModP)
     q = PolynomialModP(f.mod)
     prev_degree = degree(f)
     while degree(f) ≥ degree(g) 
-        println(degree(f))
         h = (leading(f) ÷ leading(g))(p) #syzergy 
         hg = - h*g
         f = f+hg

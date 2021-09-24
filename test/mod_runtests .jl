@@ -19,9 +19,10 @@ mod_test_ext_euclid_ints()
 # Execute unit tests for polynomials
 ####
 include("mod_polynomials_test.jl")
-for i in [3,5,7,17,53,101]
+for i in [3,11,17,19,67,101]
     println("")
     println("testing p = $i")
+    mod_sum_test_poly(i)
     mod_prod_test_poly(i)
     mod_prod_derivative_test_poly(i)
     mod_ext_euclid_test_poly(i)
@@ -32,5 +33,5 @@ end
 ####
 # Execute unit tests for polynomial factorization
 ####
-include("mod factorization_test.jl")
+include("mod_factorization_test.jl")
 mod_factor_test_poly()

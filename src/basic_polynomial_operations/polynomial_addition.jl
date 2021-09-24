@@ -9,7 +9,7 @@
 """
 Add two polynomials.
 """
-function +(p1::Polynomial, p2::Polynomial)::Polynomial
+function +(p1::Polynomial, p2::Polynomial)::Polynomial #same as with polynomials not mod p
     p1, p2 = deepcopy(p1), deepcopy(p2)
     p3 = Term[]
     while !iszero(p1) && !iszero(p2)
@@ -51,6 +51,37 @@ function plus(p1::Polynomial, p2::Polynomial)::Polynomial
 
 end
 
+function +(p1::PolynomialModP, p2::PolynomialModP)::PolynomialModP #New, fast addition method
+    @assert p1.mod == p2.mod
+    p = p1.mod
+    iszero(p1) && return p2
+    iszero(p2) && return p1
+    (iszero(p1) && iszero(p1)) && return p2
+
+    #Same basic structure as old method accept that the polynomil are turned into vectors
+
+    degree(p1) > degree(p2) ? n = degree(p1)+1 : n = degree(p2)+1
+
+    p1 = coeffvector(p1.polynomial,n)
+    p2 = coeffvector(p2.polynomial,n)
+
+    output = [Term(0,0) for _ in 1:n]
+    i = 1
+    for j in 1:n
+        c = mod(p1[j]+p2[j],p)
+        if c == 0
+            popat!(output,i)
+        else
+            output[i] = Term(c,n-j)
+            i = i+1
+        end
+        
+    end
+    poly = Polynomial(output,true)
+    return PolynomialModP(poly,p,true)
+
+end
+
 function plus(p1::PolynomialModP, p2::PolynomialModP)::PolynomialModP #old, slow addition method
     @assert p1.mod == p2.mod
     p = p1.mod
@@ -76,36 +107,6 @@ function plus(p1::PolynomialModP, p2::PolynomialModP)::PolynomialModP #old, slow
     return PolynomialModP(p3,p)
 end
 
-function +(p1::PolynomialModP, p2::PolynomialModP)::PolynomialModP #New, fast addition method
-    @assert p1.mod == p2.mod
-    p = p1.mod
-    iszero(p1) && return p2
-    iszero(p2) && return p1
-    (iszero(p1) && iszero(p1)) && return p2
-
-    degree(p1) > degree(p2) ? n = degree(p1)+1 : n = degree(p2)+1
-
-    p1 = coeffvector(p1.polynomial,n)
-    p2 = coeffvector(p2.polynomial,n)
-
-    output = [Term(0,0) for _ in 1:n]
-    i = 1
-    for j in 1:n
-        c = mod(p1[j]+p2[j],p)
-        if c == 0
-            popat!(output,i)
-        else
-            output[i] = Term(c,n-j)
-            i = i+1
-        end
-        
-    end
-
-    poly = Polynomial(output,true)
-    return PolynomialModP(poly,p,true)
-
-end
-
 """
 Add a polynomial and a term.
 """
@@ -125,13 +126,3 @@ Add a polynomial and an integer.
 +(n::Int, p::PolynomialModP) = p + Term(n,0)
 
 
-function addtest()
-    a = rand(PolynomialModP,101, degree = 10000)
-    b = rand(PolynomialModP,101, degree = 10000)
-    println("Time taken for:")
-    println("New Method:")
-    @time l = b+a
-    println("Old Method:")
-    @time m = plus(b,a)
-    @assert iszero(l-m)
-end
