@@ -19,7 +19,7 @@ mod_test_ext_euclid_ints()
 # Execute unit tests for polynomials
 ####
 include("mod polynomials_test.jl")
-for i in [5,7]
+for i in [5,7,11]
     println("")
     println("testing p = $i")
     mod_prod_test_poly(i)

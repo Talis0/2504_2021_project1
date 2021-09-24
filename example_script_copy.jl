@@ -2,7 +2,7 @@ include("poly_factorization_project.jl")
 println("")
 println("")
 println("----- Example Polynomials -----")
-x = x_poly(5)
+x = x_poly(3)
 p1 = 2x^3 + 4x^2 - 3x
 p2 = 2x^4 - 4x^2 - 3x + 3
 @show p1
@@ -19,8 +19,9 @@ println("")
 
 println("----- Derivatives-----")
 
+
 @show derivative(p1*p2)
-@show derivative(p1)*p2 + p1*derivative(p2);
+@show derivative(p1)*p2 + p1*derivative(p2)
 
 println("")
 
@@ -36,3 +37,5 @@ println("Reconstructing: ", pr)
 println(" ")
 println("---- Extended Euclid Algorithm on p1 and p2 (mod 101) ----")
 extended_euclid_alg(p1*p2,p2)
+
+println(":)")

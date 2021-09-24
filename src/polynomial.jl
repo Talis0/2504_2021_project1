@@ -34,7 +34,7 @@
     """
     function Polynomial(tv::Vector{Term})
         n = length(tv)
-        sort!(tv, by = x -> -x.degree)
+       sort!(tv, by = x -> -x.degree)
         if n == 1
             return Polynomial(tv, true)
         else
@@ -101,6 +101,11 @@
                 i = i + 1
             end
         end
+
+        if length(terms)== 0 || terms[1].coeff == 0 
+            return PolynomialModP(p)
+        end
+        
         terms = Polynomial(terms,true)
         return PolynomialModP(terms, p, true) 
     end 
@@ -134,7 +139,7 @@
     """
     Creates the unit polynomial.
     """
-    one(::Type{Polynomial})::Polynomial = Polynomial(one(Term))
+    one(::Type{Polynomial})::Polynomial = Polynomial(Term(1,0))
     one(p::Polynomial) = one(typeof(p))
 
     one(::Type{PolynomialModP},p)::PolynomialModP = PolynomialModP(one(Term),p)
@@ -213,17 +218,6 @@
 
     show(io::IO,poly::PolynomialModP) = print(io, poly.polynomial, " (mod ", poly.mod, ")")
 
-    #= function show(io::IO, p::Polynomial) 
-        p = deepcopy(p)
-        if iszero(p)
-            print(io,"0")
-        else
-            n = length(p.terms)
-            for (i,t) in enumerate(extract_all!(p.terms))
-                print(io, t, i != n ? " + " : "")
-            end
-        end
-    end =#
 
 ##############################################
 # Iteration over the terms of the polynomial #
@@ -235,6 +229,21 @@
     iterate(p::Polynomial, state=1) = iterate(p.terms, state)
     iterate(p::PolynomialModP, state=1) = iterate(p.polynomial.terms, state)
 
+    function coeffvector(p::Polynomial, size::Int = -1)::Vector{Int}
+        size == -1 && (size = degree(p)+1)
+        a = zeros(size)
+        if length(p.terms) != size
+            for t in p.terms
+                a[size - t.degree] = t.coeff
+            end
+        else
+            a = coeffs(p)
+        end
+        return a
+    end
+
+    coeffvector(p::PolynomialModP,size::Int = -1) = coeffvector(p.polynomial, size)
+ 
 ##############################
 # Queries about a polynomial #
 ##############################
@@ -306,7 +315,7 @@
     Check if the polynomial is zero.
     """
     iszero(p::Polynomial)::Bool = isempty(p.terms)
-    iszero(p::PolynomialModP)::Bool = isempty(p.polynomial.terms)
+    iszero(p::PolynomialModP)::Bool = iszero(p.polynomial)
 
 #################################################################
 # Transformation of the polynomial to create another polynomial #
@@ -342,7 +351,7 @@
     """
     A square free polynomial.
     """
-    #square_free(p::Polynomial, prime::Int)::Polynomial = (p ÷ gcd(p,derivative(p),prime))(prime)
+    square_free(p::Polynomial, prime::Int)::Polynomial = (p ÷ gcd(p,derivative(p),prime))(prime)
     square_free(p::PolynomialModP)::PolynomialModP = p ÷ gcd(p,derivative(p))
 
 #################################
@@ -371,11 +380,11 @@
     Subtraction of two polynomials.
     """
     -(p1::Polynomial, p2::Polynomial)::Polynomial = p1 + (-p2)
-    -(p1::PolynomialModP, p2::PolynomialModP) = PolynomialModP(p1.polynomial - p2.polynomial, p1.mod)
+    -(p1::PolynomialModP, p2::PolynomialModP)::PolynomialModP = p1 + (-p2)
 
-    -(p::PolynomialModP, n::Int) = PolynomialModP(p.polynomial - n,p.mod)
+    -(p::PolynomialModP, n::Int) = p + PolynomialModP(Term(-n,0),p.mod) 
     #Subtract an integer from a Polynomial
-    -(t1::Polynomial, n::Int)::Polynomial = t1 + Polynomial(Term(-n,0)) 
+    -(p::Polynomial, n::Int)::Polynomial = p + Polynomial(Term(-n,0)) 
 
 
     """
@@ -384,7 +393,7 @@
     *(t::Term,p1::Polynomial)::Polynomial = iszero(t) ? Polynomial() : Polynomial(map((pt)->t*pt, p1.terms))
     *(p1::Polynomial, t::Term)::Polynomial = t*p1
 
-    *(t::Term,p1::PolynomialModP) = PolynomialModP(t*(p1.polynomial),p1.mod)
+    *(t::Term,p1::PolynomialModP) = iszero(t) ? PolynomialModP(p1.mod) : PolynomialModP(map((pt)->mod(t*pt,p1.mod), p1.polynomial.terms),p1.mod)
     *(p1::PolynomialModP, t::Term) = t*p1
 
     """
@@ -393,8 +402,8 @@
     *(n::Int,p::Polynomial)::Polynomial = p*Term(n,0)
     *(p::Polynomial,n::Int)::Polynomial = n*p
 
-    *(n::Int,p::PolynomialModP)::PolynomialModP = p*Term(n,0)
-    *(p::PolynomialModP,n::Int)::PolynomialModP = n*p
+    *(n::Int,p::PolynomialModP) = p*Term(n,0)
+    *(p::PolynomialModP,n::Int) = n*p
 
     """
     Integer division of a polynomial by an integer.

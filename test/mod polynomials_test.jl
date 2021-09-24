@@ -64,7 +64,6 @@ function mod_prod_derivative_test_poly(mod::Int;N::Int = 10^2,  seed::Int = 0)
     println("prod_derivative_test_poly - PASSED")
 end
 
-
 """
 Test division of polynomials modulo p.
 """

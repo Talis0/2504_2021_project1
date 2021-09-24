@@ -24,6 +24,9 @@ function prod_test_poly(;N::Int = 10^3, N_prods::Int = 20, seed::Int = 0)
         for _ in 1:N_prods
             p = rand(Polynomial)
             prod = p_base*p
+            println("")
+            @show prod
+            @show p_base*̄p
             @assert leading(prod) == leading(p_base)*leading(p)
             p_base = prod
         end

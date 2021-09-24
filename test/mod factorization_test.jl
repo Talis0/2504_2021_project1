@@ -10,19 +10,22 @@
 """
 Test factorization of polynomials.
 """
-function mod_factor_test_poly(;N::Int = 25, seed::Int = 2, primes::Vector{Int} = [5,7,11,17])
+function mod_factor_test_poly(;N::Int = 25, seed::Int = 10, primes::Vector{Int} = [3])
     Random.seed!(seed)
     for prime in primes
         print("\ndoing prime = $prime \t")
         for _ in 1:N
-            print(".")
+            println(".")
             p = rand(PolynomialModP,prime)
+            @show p
             factorization = factor(p)
             pr = expand_factorization(factorization)
-            @assert p-pr == 0 
+            if p - pr != 0
+                @assert p-pr == 0 
+            end
+
         end
     end
-
     println("\nfactor_test_poly - PASSED")
 end
 

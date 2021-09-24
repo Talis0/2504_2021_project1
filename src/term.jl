@@ -13,15 +13,17 @@
 """
 A term.
 """
-struct Term  #structs are immutable by default
+mutable struct Term  #structs are immutable by default
     coeff::Int
     degree::Int
-    function Term(coeff::Int, degree::Int)
+    function Term(coeff, degree::Int)
         degree < 0 && error("Degree must be non-negative")
         coeff != 0 ? new(coeff,degree) : new(coeff,0)
     end
 end
 
+Term(a::Tuple{Int,Int}) = Term(a[1],a[2])
+    
 """
 Creates the zero term.
 """
@@ -136,4 +138,9 @@ Integer divide a term by an integer.
 """
 ÷(t::Term, n::Int) = t ÷ Term(n,0)
 
+"""
+Returns the Coefficients and Degrees of a Term
+"""
+coeff(t::Term)::Int = t.coeff
+degree(t::Term)::Int = t.degree
 "---- Term Run ----"
